@@ -6,7 +6,7 @@ const BackDrop = (props) => {
   return <div className={classes.backdrop} onClick={props.onClose} />;
 };
 
-const ModalOVerlay = (props) => {
+const ModalOverlay = (props) => {
   return (
     <div className={classes.modal}>
       <div className={classes.content}>{props.children}</div>
@@ -21,7 +21,7 @@ const Modal = (props) => {
     <>
       {createPortal(<BackDrop onClose={props.onClose} />, portalElement)}
       {createPortal(
-        <ModalOVerlay>{props.children}</ModalOVerlay>,
+        <ModalOverlay>{props.children}</ModalOverlay>,
         portalElement
       )}
     </>
