@@ -7,6 +7,8 @@ import Checkout from "./Checkout";
 
 const Cart = (props) => {
   const [isCeckout, setCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
   const cartCtx = useContext(CartContext);
   const hasItems = cartCtx.items.length > 0;
 
@@ -19,6 +21,29 @@ const Cart = (props) => {
 
   const orderHandler = () => {
     setCheckout(true);
+  };
+
+  const submitOrderHandler = async (userData) => {
+    setIsSubmitting(true);
+    const url =
+      "https://reactmeals-5e619-default-rtdb.europe-west1.firebasedatabase.app/orders.json";
+    try {
+      const respons = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          user: userData,
+          oderItems: cartCtx.items,
+        }),
+      });
+      if (!respons.ok) {
+        throw new Error("Something went wrong");
+      }
+    } catch (error) {
+      alert(error);
+    }
+    setIsSubmitting(false);
+    setDidSubmit(true);
+    cartCtx.clearCart();
   };
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
@@ -49,15 +74,38 @@ const Cart = (props) => {
       ) : null}
     </div>
   );
-
-  return (
-    <Modal onClose={props.onClose}>
+  const cartModalConet = (
+    <>
       {cartItems}
+
       <div className={classes.total}>
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCeckout ? <Checkout onCancel={props.onClose} /> : modalAction}
+      {isCeckout ? (
+        <Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />
+      ) : (
+        modalAction
+      )}
+    </>
+  );
+
+  const isSubmittingModalContent = <p>Sending order data...</p>;
+  const didSubmitModalContent = (
+    <>
+      <p>Succesfully sent the order!</p>
+      <div className={classes.actions}>
+        <button className={classes.button} onClick={props.onClose}>
+          Close
+        </button>
+      </div>
+    </>
+  );
+  return (
+    <Modal onClose={props.onClose}>
+      {!isSubmitting && !didSubmit && cartModalConet}
+      {isSubmitting && isSubmittingModalContent}
+      {!isSubmitting && didSubmit && didSubmitModalContent}
     </Modal>
   );
 };
