@@ -9,7 +9,7 @@ const AvailableMeals = () => {
   const [httpError, setHttpError] = useState(null);
 
   const url =
-    "https://reactmeals-5e619-default-rtdb.europe-west1.firebasedatabase.app/meals.jso";
+    "https://reactmeals-5e619-default-rtdb.europe-west1.firebasedatabase.app/meals.json";
   useEffect(() => {
     const fetchMeals = async () => {
       const respons = await fetch(url);
